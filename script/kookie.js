@@ -60,8 +60,9 @@
 	kookie.loadScript = function(src, callback, cleanUp)
 	{
 		var script  = document.createElement('script'),
-		   callback = typeof callback == 'function' ? callback : function(){},
-		  onReady   = cleanUp ? function(){callback();script.parentNode.removeChild(script)} : callback;
+		  onReady   = callback || function(){};
+		if (cleanUp)
+			callback = function(){callback();script.parentNode.removeChild(script)};
 		script.type = "text/javascript";
 		if (script.onreadystatechange)
 			script.onreadystatechange = function(){if(/complete|loaded/.test(this.readyState))onReady()};
@@ -85,7 +86,11 @@
 	{
 		var consent = kookie.getConsentCookie();
 
-		if ((kookie.config.countries || kookie.config.continents))
+		if (typeof consent.allow == 'boolean')
+		{
+			return kookie._enterState(consent.allow ? kookie.state.HAS_CONSENT : kookie.state.NO_CONSENT);
+		}
+		else if ((kookie.config.countries || kookie.config.continents))
 		{
 			kookie.loadScript(
 				kookie.config.geo.provider,
@@ -190,12 +195,13 @@
 	kookie._triggerStateHandler = function(state)
 	{
 		var event = kookie._getStateName(state).replace(/[^A-Z]+/g, '').toLowerCase(),
-		 listener = kookie._getStateListeners(state);
+		 listener = kookie._getStateListeners(state),
+		        i;
 
-		if (typeof kookie._stateListener[state] != 'undefined')
-			for (var i = 0; i < kookie._stateListener[state].length; ++i)
+		if (typeof listener != 'undefined')
+			for (i = 0; i < listener.length; ++i)
 				if (state == kookie._currentState)
-					kookie._stateListener[state][i]();
+					listener[i]();
 
 		//  check for an assigned event and call it if it exists
 		if (state == kookie._currentState)
@@ -209,8 +215,9 @@
 	kookie.getCookie = function(name)
 	{
 		var cookie = document.cookie.split(';'),
-		     match = null;
-		for (var i = 0; i < cookie.length; ++i)
+		     match = null,
+		         i;
+		for (i = 0; i < cookie.length; ++i)
 		{
 			match = cookie[i].match(new RegExp(name + '=(.*)', 'i'));
 			if (match && match.length > 1)
@@ -282,7 +289,7 @@
 	};
 
 	//  constants
-	kookie.state  = {INIT:0,CONFIG:1,READY:2,OBTAINED_CONSENT:3,REVOKED_CONSENT:4,IMPLICIT_CONSENT:5,HAS_CONSENT:6,NO_CONSENT:7,DO_NOT_TRACK:8};
+	kookie.state = {INIT:0,CONFIG:1,READY:2,OBTAINED_CONSENT:3,REVOKED_CONSENT:4,IMPLICIT_CONSENT:5,HAS_CONSENT:6,NO_CONSENT:7,DO_NOT_TRACK:8};
 
 	//  default configuration
 	kookie.defaultConfig = {
