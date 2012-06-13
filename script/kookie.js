@@ -36,6 +36,17 @@
 	kookie.askUserConsent = function()
 	{
 		kookie.createConsentInterface();
+		if (kookie.config.animate)
+		{
+			var ctr = kookie.structure.container,
+			    h = ctr.offsetHeight || ctr.clientHeight || null;
+			if (h)
+			{
+				ctr.style.height   = '0px';
+				ctr.style.overflow = 'hidden';
+				kookie._sizeAnimation(ctr, {height:h}, 20);
+			}
+		}
 	};
 	kookie.userConsent = function(doAllowTracking)
 	{
@@ -83,9 +94,19 @@
 	{
 		if (typeof kookie.structure != 'undefined')
 		{
-			kookie.structure.container.parentNode.removeChild(kookie.structure.container);
-			delete kookie.structure;
+			if (kookie.config.animate)
+			{
+				return kookie._sizeAnimation(kookie.structure.container, {height:0}, 20, function(){
+					kookie._destroyStructure();
+				});
+			}
+			kookie._destroyStructure();
 		}
+	};
+	kookie._destroyStructure = function()
+	{
+		kookie.structure.container.parentNode.removeChild(kookie.structure.container);
+		delete kookie.structure;
 	};
 	kookie.createConsentInterface = function()
 	{
@@ -339,6 +360,32 @@
 			dnt = dnt == '1' ? 'yes' : 'no';
 		return dnt == 'yes';
 	};
+	kookie._sizeAnimation = function(obj, style, steps, ready)
+	{
+		obj._animate = function(c)
+		{
+			var obj = this;
+			clearTimeout(c.timer);
+			++c.step;
+			for (var p in c.to)
+				obj.style[p] = c.smooth(c.from[p], c.to[p], c.step, c.steps) + 'px';
+			if (c.step >= c.steps)
+			{
+				if (c.ready) c.ready();
+				return delete obj._animate;
+			}
+			c.timer = setTimeout(function(){obj._animate(c);}, 40);
+		};
+		obj._animate({
+			to:style,
+			from:{width:typeof style.width ? obj.offsetWidth || obj.clientHeight || null : null,height:typeof style.height ? obj.offsetHeight || obj.clientHeight || null : null},
+			step:0,
+			steps:steps,
+			timer:null,
+			smooth:function(from, to, step, steps){return (to - from) / 2 * ((step /= steps / 2) < 1 ? Math.pow(step, 3) : (step -= 2) * Math.pow(step, 2) + 2) + from;},
+			ready:ready
+		});
+	};
 	kookie._getStateName = function(state)
 	{
 		for (var p in kookie.state)
@@ -368,6 +415,7 @@
 			path:'/'
 		},
 		automaticallyAsk:true,
+		animate:true,
 		respectDoNotTrack:true,
 		countries:[
 			'AT',  //  Austria
