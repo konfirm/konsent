@@ -32,10 +32,10 @@
 			window.onload = call;
 	};
 
-	//  visual appearance
+	//  common methods
 	kookie.askUserConsent = function()
 	{
-		kookie.setConsentCookie(confirm('Do you want to enable tracking cookies?'));
+		kookie.createConsentInterface();
 	};
 	kookie.userConsent = function(doAllowTracking)
 	{
@@ -54,7 +54,75 @@
 	{
 		return kookie.geo;
 	};
-	
+
+	//  visual appearance
+	kookie.getInterfaceStructure = function()
+	{
+		if (typeof kookie.structure == 'undefined')
+		{
+			var container = document.body.insertBefore(document.createElement('div'), document.body.firstChild),
+				  content = container.appendChild(document.createElement('div')),
+				 question = content.appendChild(document.createElement('span')),
+				     more = container.appendChild(document.createElement('button')),
+				   action = content.appendChild(document.createElement('span'));
+
+			kookie.structure = {
+				container:container,
+				 content:content,
+				question:question,
+				    more:more,
+				  action:action,
+				 explain:content.appendChild(document.createElement('div')),
+				 consent:action.appendChild(document.createElement('button')),
+				 decline:action.appendChild(document.createElement('button'))
+			};
+		}
+		return kookie.structure;
+	};
+	kookie.removeInterfaceStructure = function()
+	{
+		if (typeof kookie.structure != 'undefined')
+		{
+			kookie.structure.container.parentNode.removeChild(kookie.structure.container);
+			delete kookie.structure;
+		}
+	};
+	kookie.createConsentInterface = function()
+	{
+		var structure = kookie.getInterfaceStructure(),
+		         p, s;
+
+		for (p in structure)
+		{
+			structure[p].className = 'kookie_' + p;
+			if (typeof kookie.config.style[p] == 'object')
+				for (s in kookie.config.style[p])
+					structure[p].style[s] = kookie.config.style[p][s];
+
+			if (typeof kookie.config.text[p] != 'undefined')
+			{
+				if (/button/i.test(structure[p].nodeName))
+					structure[p].appendChild(document.createTextNode(kookie.config.text[p]));
+				else
+					structure[p].innerHTML = kookie.config.text[p];
+			}
+		}
+
+		structure.consent.onclick = function(){
+			kookie.userConsent(true);
+			kookie.removeInterfaceStructure();
+		};
+
+		structure.decline.onclick = function(){
+			kookie.userConsent(false);
+			kookie.removeInterfaceStructure();
+		};
+
+		structure.more.onclick = function(){
+			kookie.structure.more.style.display    = 'none';
+			kookie.structure.explain.style.display = 'block';
+		};
+	};
 
 	//  external script loading
 	kookie.loadScript = function(src, callback, cleanUp)
@@ -173,9 +241,7 @@
 				}
 
 				if (kookie.config.automaticallyAsk)
-				{
 					kookie.askUserConsent();
-				}
 				break;
 
 			case kookie.state.OBTAINED_CONSENT:
@@ -301,6 +367,8 @@
 			domain:'.' + (window.location.host.split('.').splice(-2)).join('.'), //  the main domain
 			path:'/'
 		},
+		automaticallyAsk:true,
+		respectDoNotTrack:true,
 		countries:[
 			'AT',  //  Austria
 			'BE',  //  Belgium
@@ -334,8 +402,17 @@
 		geo:{
 			provider:'http://konfirm.net/api/geo/summary.jsonp?callback=Kookie.setGeoLocation', 
 		},
-		automaticallyAsk:true,
-		respectDoNotTrack:true
+		style:{
+			container:{position:'relative'},
+			  explain:{display:'none'}
+		},
+		text:{
+			question:'Do you want to allow non-essential cookies?',
+			    more:'Read more',
+			 explain:'As of the 26th of May 2012, all EU citizens must provide explicit consent to allow websites to use so called tracking-cookies. These cookies usually derive from other websites which integrate functionality into the website you are visiting.',
+			 consent:'Yes, I allow this',
+			 decline:'No, thank you'
+		}
 	};
 })();
 
