@@ -1,5 +1,5 @@
 /**
- *       __    Konsent (v0.8.0)- a EU-law cookie consent helper library
+ *       __    Konsent (v0.8.1)- a EU-law cookie consent helper library
  *      /\_\
  *   /\/ / /   Copyright 2012, Konfirm (Rogier Spieker)
  *   \  / /    Releases under the MIT and GPL licenses
@@ -74,16 +74,18 @@
 			var container = document.body.insertBefore(document.createElement('div'), document.body.firstChild),
 				  content = container.appendChild(document.createElement('div')),
 				 question = content.appendChild(document.createElement('span')),
-				     more = container.appendChild(document.createElement('button')),
-				   action = content.appendChild(document.createElement('span'));
+				   action = content.appendChild(document.createElement('span')),
+				    extra = content.appendChild(document.createElement('div')),
+				     more = extra.appendChild(document.createElement('button'));
 
 			konsent.structure = {
 				container:container,
 				 content:content,
 				question:question,
+				   extra:extra,
 				    more:more,
 				  action:action,
-				 explain:content.appendChild(document.createElement('div')),
+				 explain:extra.appendChild(document.createElement('div')),
 				 consent:action.appendChild(document.createElement('button')),
 				 decline:action.appendChild(document.createElement('button'))
 			};
@@ -503,6 +505,7 @@
 		style:{
 			container:{position:'relative', fontFamily:'"Lucida Grande", "Trebuchet MS", Verdana, _sans', backgroundColor:'#111', color:'#fff'},
 			  content:{fontSize:'18px', lineHeight:'24px'},
+			    extra:{padding:'5px 0'},
 			  explain:{display:'none', fontSize:'14px', lineHeight:'18px'}
 		},
 		text:{
