@@ -1,5 +1,5 @@
 /**
- *       __    Konsent (v0.8.1)- a EU-law cookie consent helper library
+ *       __    Konsent (v0.8.2)- a EU-law cookie consent helper library
  *      /\_\
  *   /\/ / /   Copyright 2012, Konfirm (Rogier Spieker)
  *   \  / /    Releases under the MIT and GPL licenses
@@ -144,30 +144,43 @@
 			konsent._sizeAnimation(konsent.structure.container, {height:konsent.structure.content.offsetHeight || konsent.structure.content.clientHeight || null}, 20);
 		};
 	};
-	konsent._applyDefaultStyle = function()
+	konsent._getStyleNode = function(parent)
 	{
-		var c, css, p;
-
+		var node = false, 
+			domain = document.location.href.match(/([a-z]+:\/\/[a-z_\.-]+)/),
+			i;
 		if (document.styleSheets)
 		{
-			if (document.styleSheets.length <= 0)
-				(document.head || document.body).appendChild(document.createElement('style')).type = 'text/css';
-
-			if (document.styleSheets.length > 0)
-				for (c in konsent.config.style)
+			for (i = 0; i < document.styleSheets.length; ++i)
+				if (!document.styleSheets[i].href || (new RegExp(domain ? domain[0] : document.location.href)).test(document.styleSheets[i].href))
 				{
-					css = '';
-					for (p in konsent.config.style[c])
-						css += p.replace(/([A-Z])/g, '-$1').toLowerCase() + ':' + konsent.config.style[c][p] + ';';
-					if (css != '')
-					{
-						if (document.styleSheets[0].insertRule)
-							document.styleSheets[0].insertRule('div.konsent_' + c + ' {' + css + '}', 0);
-						else if (document.styleSheets[0].addRule)
-							document.styleSheets[0].addRule('div.konsent_' + c, css, 0);
-					}
+					node = document.styleSheets[i];
+					break;
 				}
+			if (!node)
+				node = parent.insertBefore(document.createElement('style'), parent.firstChild);
 		}
+		return node;
+	};
+	konsent._applyDefaultStyle = function()
+	{
+		var node = konsent._getStyleNode((document.head || document.body)),
+			c, css, p;
+
+		if (node)
+			for (c in konsent.config.style)
+			{
+				css = '';
+				for (p in konsent.config.style[c])
+					css += p.replace(/([A-Z])/g, '-$1').toLowerCase() + ':' + konsent.config.style[c][p] + ';';
+				if (css != '')
+				{
+					if (node.insertRule)
+						node.insertRule('div.konsent_' + c + ' {' + css + '}', 0);
+					else if (node.addRule)
+						node.addRule('div.konsent_' + c, css, 0);
+				}
+			}
 	};
 
 	//  external script loading
