@@ -417,6 +417,21 @@
 		if (hasChanged)
 			konsent._enterState(doAllow ? konsent.state.OBTAINED_CONSENT : (prevValue.allow == true ? konsent.state.REVOKED_CONSENT : konsent.state.NO_CONSENT));
 	};
+	konsent.getConsentChoiceAge = function()
+	{
+		var now = (new Date()).getTime(),
+		consent = konsent.getConsentCookie(),
+		  delta = consent && consent.date ? now - consent.date.getTime() : false;
+
+		return {
+			ms:delta,
+			seconds:delta ? Math.floor(delta /= 1000) : false,
+			minutes:delta ? Math.floor(delta /= 60) : false,
+			hours:delta ? Math.floor(delta /= 60) : false,
+			days:delta ? Math.floor(delta /= 24) : false,
+			weeks:delta ? Math.floor(delta /= 7) : false
+		};
+	};
 
 	//  helpers
 	konsent._doNotTrack = function()
