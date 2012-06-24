@@ -1,5 +1,5 @@
 /**
- *       __    Konsent (v0.8.2)- a EU-law cookie consent helper library
+ *       __    Konsent (v0.8.3)- a EU-law cookie consent helper library
  *      /\_\
  *   /\/ / /   Copyright 2012, Konfirm (Rogier Spieker)
  *   \  / /    Releases under the MIT and GPL licenses
