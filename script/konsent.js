@@ -139,9 +139,12 @@
 		};
 
 		structure.more.onclick = function(){
-			konsent.structure.more.style.display    = 'none';
-			konsent.structure.explain.style.display = 'block';
-			konsent._sizeAnimation(konsent.structure.container, {height:konsent.structure.content.offsetHeight || konsent.structure.content.clientHeight || null}, 20);
+			konsent.structure.more.style.display       = 'none';
+			konsent.structure.explain.style.display    = 'block';
+			konsent.structure.explain.style.visibility = 'hidden';
+			konsent._sizeAnimation(konsent.structure.container, {height:konsent.structure.content.offsetHeight || konsent.structure.content.clientHeight || null}, 15, function(){
+				konsent.structure.explain.style.visibility = ''
+			});
 		};
 	};
 	konsent._getStyleNode = function(parent)
