@@ -1,5 +1,5 @@
 /**
- *       __    Konsent (v0.8.3)- a EU-law cookie consent helper library
+ *       __    Konsent (v0.8.4)- a EU-law cookie consent helper library
  *      /\_\
  *   /\/ / /   Copyright 2012, Konfirm (Rogier Spieker)
  *   \  / /    Releases under the MIT and GPL licenses
@@ -161,7 +161,10 @@
 					break;
 				}
 			if (!node)
-				node = parent.insertBefore(document.createElement('style'), parent.firstChild);
+			{
+				parent.insertBefore(document.createElement('style'), parent.firstChild);
+				node = document.styleSheets[0]; // use first styleSheet, because this is the one you just added
+			}
 		}
 		return node;
 	};
