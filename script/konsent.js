@@ -182,9 +182,9 @@
 				if (css != '')
 				{
 					if (node.insertRule)
-						node.insertRule('div.konsent_' + c + ' {' + css + '}', 0);
+						node.insertRule('.konsent_' + c + ' {' + css + '}', 0);
 					else if (node.addRule)
-						node.addRule('div.konsent_' + c, css, 0);
+						node.addRule('.konsent_' + c, css, 0);
 				}
 			}
 	};
