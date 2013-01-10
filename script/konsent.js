@@ -1,5 +1,5 @@
 /**
- *       __    Konsent (v0.8.4)- a EU-law cookie consent helper library
+ *       __    Konsent (v0.8.5)- a EU-law cookie consent helper library
  *      /\_\
  *   /\/ / /   Copyright 2012, Konfirm (Rogier Spieker)
  *   \  / /    Releases under the MIT and GPL licenses
@@ -149,7 +149,7 @@
 	};
 	konsent._getStyleNode = function(parent)
 	{
-		var node = false, 
+		var node = false,
 			domain = document.location.href.match(/([a-z]+:\/\/[a-z_\.-]+)/),
 			i;
 		if (document.styleSheets)
@@ -410,7 +410,7 @@
 		   hasChanged = typeof prevValue.allow != 'boolean' || prevValue.allow != doAllow;
 
 		konsent.setCookie(
-			konsent.config.cookie.name, 
+			konsent.config.cookie.name,
 			(doAllow ? konsent.config.cookie.valueAllowed : konsent.config.cookie.valueDeclined) + ':' + (new Date()).getTime(),
 			konsent.config.cookie.lifetime,
 			konsent.config.cookie.path,
@@ -448,7 +448,7 @@
 	{
 		obj._animate = function(c)
 		{
-			var obj = this, 
+			var obj = this,
 			      p;
 			clearTimeout(c.timer);
 			++c.step;
