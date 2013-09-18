@@ -1,12 +1,13 @@
 /**
- *       __    Konsent (v0.8.5)- a EU-law cookie consent helper library
+ *       __    Konsent (version $DEV$ - $DATE$)- a EU-law cookie consent helper library
  *      /\_\
- *   /\/ / /   Copyright 2012, Konfirm (Rogier Spieker)
+ *   /\/ / /   Copyright 2012-2013, Konfirm (Rogier Spieker)
  *   \  / /    Releases under the MIT and GPL licenses
  *    \/_/     More information: http://konfirm.net/konsent
  */
 ;var Konsent = Konsent||new(function(){
-	var konsent = this;
+	var konsent = this,
+		version = '$DEV$';
 
 	//  initialization
 	konsent.init = function(config)
